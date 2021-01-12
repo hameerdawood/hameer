@@ -1,0 +1,1736 @@
+Admin Panal
+package main;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+
+public class AdminPanel extends Group{
+
+	public AdminPanel() {
+		// TODO Auto-generated method stub
+	Group root= new Group();
+		HBox v= new HBox();
+		
+		
+		Button btn_vehicle=new Button("Manage Vehicles");
+		btn_vehicle.setPrefSize(250, 30);
+		btn_vehicle.setTextFill(Color.WHITE);
+		btn_vehicle.setStyle("-fx-background-color : green");
+		
+		Button btn_user=new Button("Manage Users");
+		btn_user.setPrefSize(250, 30);
+		btn_user.setTextFill(Color.WHITE);
+		btn_user.setStyle("-fx-background-color : green");
+		
+		Button btn_rent=new Button("Manage Rent");
+		btn_rent.setPrefSize(250, 30);
+		btn_rent.setTextFill(Color.WHITE);
+		btn_rent.setStyle("-fx-background-color : green");
+		
+		btn_user.setOnAction(e->{
+			System.out.println("ahjkask");
+			MUser m=new MUser();
+			m.setTranslateX(80);
+			m.setTranslateY(30);
+			super.getChildren().add(m);
+			
+		});
+		
+		btn_vehicle.setOnAction(e->{
+			System.out.println("ahjkask");
+			MVehicles m=new MVehicles();
+			m.setTranslateX(80);
+			m.setTranslateY(30);
+			super.getChildren().add(m);
+			
+		});
+		btn_rent.setOnAction(e->{
+			System.out.println("ahjkask");
+			MRent m=new MRent();
+			m.setTranslateX(80);
+			m.setTranslateY(30);
+			super.getChildren().add(m);
+			
+		});
+	v.getChildren().addAll(btn_user,btn_vehicle,btn_rent);
+		v.setTranslateX(120);
+		v.setTranslateY(30);
+		v.setSpacing(10);
+		super.getChildren().add(v);
+		super.getChildren().add(root);
+		
+	}
+	
+} 
+2. Source  file:  Booking 
+package main;
+
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class Booking extends Group{
+	ObservableList<MyBooking> data = FXCollections.observableArrayList();
+//String id, String vn, String vid, String bookingfrom, String bookingtill
+	public Booking() {
+	Group root = new Group();
+	Rectangle clearback = new Rectangle(1000, 1000);
+	clearback.setTranslateY(80);
+	clearback.setFill(Color.WHITE);
+
+	VBox v= new VBox();
+	 TableView table = new TableView();
+	 table.setEditable(true);
+
+	 TableColumn vidcol = new TableColumn("Vehicle id");
+	 TableColumn vncol = new TableColumn("Vehicle Name");
+	 TableColumn vccol = new TableColumn("Vehicle Category");
+	 TableColumn bfcol = new TableColumn("BookedFrom");
+     TableColumn btcol = new TableColumn("BookedTill");
+     
+     
+     vidcol.setMinWidth(100);
+     vncol.setMinWidth(100);
+     vccol.setMinWidth(100);
+
+     bfcol.setMinWidth(100);
+     btcol.setMinWidth(100);
+        
+     
+   
+ 	TextField vid =new TextField();
+ 	vid.setPromptText("Vehicle Id");
+ 	vid.setFocusTraversable(false);
+ 	vid.setPrefSize(180, 30);
+ 	vid.setEditable(false);
+
+ 	TextField vn =new TextField();
+ 	vn.setPromptText("Vehicle name");
+ 	vn.setFocusTraversable(false);
+ 	vn.setPrefSize(180, 30);
+ 	vn.setEditable(false);
+ 	
+ 	TextField vc =new TextField();
+ 	vc.setPromptText("Vehicle Category");
+ 	vc.setFocusTraversable(false);
+ 	vc.setPrefSize(180, 30);
+ 	vc.setEditable(false);
+ 	
+ 	TextField bf =new TextField();
+ 	bf.setPromptText("Booking Date");
+ 	bf.setFocusTraversable(false);
+ 	bf.setPrefSize(180, 30);
+
+ 	String[] days = {"1","2","3","4","5","6","7","8","9","10"};
+     ComboBox<String> bt =new ComboBox<String>(FXCollections.observableArrayList(days));
+     bt.setPromptText("No of Days");
+     bt.setFocusTraversable(false);
+     bt.setPrefSize(180, 30);
+	
+     TextField am =new TextField();
+     am.setPromptText("Amount");
+     am.setEditable(false);
+     am.setFocusTraversable(false);
+     am.setPrefSize(180, 30);
+	
+	
+	
+
+	loaddata();	
+	
+	Button btn_book=new Button("Book");
+	btn_book.setPrefSize(250, 30);
+	btn_book.setTextFill(Color.WHITE);
+	btn_book.setStyle("-fx-background-color : green");
+
+
+		vidcol.setCellValueFactory(new PropertyValueFactory<MyBooking,String>("vid"));
+	  	vncol.setCellValueFactory(new PropertyValueFactory<MyBooking,String>("vn"));
+	  	vccol.setCellValueFactory(new PropertyValueFactory<MyBooking,String>("vc"));
+
+	  	bfcol.setCellValueFactory(new PropertyValueFactory<MyBooking,String>("bf"));
+	     btcol.setCellValueFactory(new PropertyValueFactory<MyBooking,String>("bt"));
+	     
+	     table.setItems(data);
+
+	     
+	     
+	     
+	     btn_book.setOnAction(e->{
+	    	 ObservableList<MyBooking> tabledata= table.getItems();
+	    	 boolean validdate=false;
+	    	 boolean bfv=true;
+	    	 boolean btv=true;
+	    	 
+	    	 for (MyBooking data : tabledata) {
+	    		 if(bfv&&btv&&(data!=null)&&(data.getVid().equals(vid.getText())))
+	    		 {
+	    		bfv=datevalid(data.getBf(),data.getBt(),bf.getText());
+	    		btv=datevalid(data.getBf(),data.getBt(),dategen(bf.getText(),bt.getSelectionModel().getSelectedItem()));
+	    		System.out.println("bft "+bfv);
+	    		System.out.println("btv "+btv);
+	    		
+	    		if(!bfv||!btv)break;
+	    		else validdate=true;
+	    		 }
+	    	}
+	    	 
+	    	 
+	    	 //System.out.println(validdate);
+	    	 //System.out.println("jkhsakjdh"+datevalid("2020-06-04","2020-06-10","2020-06-04"));
+	
+//	    	 if(datevalid("2020-06-04","2020-06-10","2020-06-04"))
+	
+	    	 
+//	    	 System.out.println();
+//	    	 System.out.println(datevalid("2020-06-04","2020-06-10",bf.getText()));
+//	    		System.out.println(datevalid("2020-06-04","2020-06-10",dategen(bf.getText(),bt.getValue())));
+	    	 
+	    		    	 
+if(!validdate){
+	    	 addbook(Login.loginID, vid.getText(), bf.getText(), dategen(bf.getText(), bt.getSelectionModel().getSelectedItem()), amgen(vc.getText(), bt.getSelectionModel().getSelectedItem()));
+	      	 vid.setText("");
+	      	 vn.setText("");
+	    	 vc.setText("");
+	    	 bf.setText("");
+}
+	});
+	      
+	//     System.out.println(table.getSelectionModel().getSelectedItem());
+	     table.setOnMouseClicked(ex -> {
+	    	    if (ex.getClickCount() > 1) {
+	    		    MyBooking data=(MyBooking) table.getSelectionModel().getSelectedItem();
+	    	    vid.setText(data.getVid());
+	    	    vn.setText(data.getVn());
+	    	    vc.setText(data.getVc());
+	    	    bf.setText(data.getBf());
+	    	
+	    	    
+	    	    }
+	     });
+	     
+	     bt.setOnAction(e->{
+	    	 am.setText(amgen(vc.getText(), bt.getValue()));
+	     });
+	     
+	 	v.getChildren().add(vid);	     
+	v.getChildren().add(vn);
+	v.getChildren().add(vc);
+	v.getChildren().add(bf);
+	v.getChildren().add(bt);
+	v.getChildren().add(am);
+	
+	
+	
+	v.getChildren().add(btn_book);
+	v.setTranslateX(280);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	table.setTranslateX(300);
+	table.setTranslateY(80);
+	v.setTranslateX(38);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	
+	  table.getColumns().addAll(vidcol,vncol, vccol,bfcol,btcol);
+		root.getChildren().add(clearback);
+		
+	root.getChildren().add(table);
+	root.getChildren().add(v);
+	
+	super.getChildren().add(root);
+
+	}
+private void loaddata() {
+	 Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      stmt = conn.createStatement();
+	      String sql = "SELECT DISTINCT vehicle.v_id,vehicle.name,vehicle.category,rent.bookingfrom,rent.bookingtill FROM vehicle,rent";
+	      ResultSet rs = stmt.executeQuery(sql);
+	      while(rs.next()){
+	    	  MyBooking m = new MyBooking(rs.getString("v_id"),rs.getString("name"),rs.getString("category"),rs.getString("bookingfrom"),rs.getString("bookingtill"));
+	    	  data.add(m);
+	    	 }
+	      rs.close();
+	   }catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	
+}
+
+private static String dategen(String g,String days) {
+	String c="";
+	int count=0;
+	int day=Integer.parseInt(days);
+	for (int i = 0; i < g.toCharArray().length; i++) {
+		if((count!=2)&&(g.charAt(i)=='-'))count++;
+		else c=c+g.charAt(i);
+	}
+	day=day+Integer.parseInt(c);
+	String nd=""+day;
+	
+	String year=nd.substring(0, 4);
+	
+	String month=nd.substring(4, 6);
+	String d=nd.substring(6, 8);
+	
+	return year+"-"+month+"-"+d;
+}
+
+private static String amgen(String cat,String days) {
+	int day=Integer.parseInt(days);
+	int amount=100;
+	if(cat.equals("luxury")) {
+		amount=2*amount*day;
+	}
+	else {
+		amount=amount*day;
+	}
+	
+	return ""+amount;
+}
+
+
+public static boolean between(int i, int minValueInclusive, int maxValueInclusive) {
+    return (i >= minValueInclusive && i <= maxValueInclusive);
+}
+
+private static boolean datevalid(String bookingfrom,String bookingtill,String yourbookingdate) {
+	int ibf=Integer.parseInt(dateparse(bookingfrom));
+	int ibt=Integer.parseInt(dateparse(bookingtill));
+	int ibd=Integer.parseInt(dateparse(yourbookingdate));
+	
+	boolean valid=false;
+		valid=between(ibd, ibf, ibt);
+	return !valid;
+}
+
+private static String dateparse(String d) {
+	String c="";
+	int count=0;
+	for (int i = 0; i < d.toCharArray().length; i++) {
+		if((count!=2)&&(d.charAt(i)=='-'))count++;
+		else c=c+d.charAt(i);
+	}
+	return c;
+}
+private void addbook(String u,String vid,String bf,String bt,String am) {
+
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("Insert into rent(u_id,v_id,bookingfrom,bookingtill,amount) VALUES(?,?,?,?,?)");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, u);
+	      pstmt.setString(2, vid);
+	      pstmt.setString(3, bf);
+	      pstmt.setString(4, bt);
+	      pstmt.setString(5, am);
+          
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+
+} 
+3. Source  file:  Client Panal 
+package main;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+
+public class ClientPanel extends Group{
+
+	public ClientPanel() {
+		// TODO Auto-generated method stub
+	Group root= new Group();
+		HBox v= new HBox();
+		
+		
+		Button btn_book=new Button("Book a Car");
+		btn_book.setPrefSize(250, 30);
+		btn_book.setTextFill(Color.WHITE);
+		btn_book.setStyle("-fx-background-color : green");
+		
+		Button btn_his=new Button("See History");
+		btn_his.setPrefSize(250, 30);
+		btn_his.setTextFill(Color.WHITE);
+		btn_his.setStyle("-fx-background-color : green");
+		
+	
+		
+		btn_book.setOnAction(e->{
+			System.out.println("ahjkask");
+			Booking m=new Booking();
+			m.setTranslateX(80);
+			m.setTranslateY(30);
+			super.getChildren().add(m);
+			
+		});
+		
+		btn_his.setOnAction(e->{
+			System.out.println("ahjkask");
+			History m=new History(Login.loginID);
+			m.setTranslateX(80);
+			m.setTranslateY(30);
+			super.getChildren().add(m);
+		});
+	
+	v.getChildren().addAll(btn_book,btn_his);
+		v.setTranslateX(120);
+		v.setTranslateY(30);
+		v.setSpacing(10);
+		super.getChildren().add(v);
+		super.getChildren().add(root);
+		
+	}
+	
+} 
+4. Source  file:  History
+package main;
+
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class History extends Group{
+	ObservableList<MyHistory> data = FXCollections.observableArrayList();
+	String id;
+//String id, String uid, String vid, String bookingfrom, String bookingtill
+	public History(String id) {
+	this.id=id;
+	Group root = new Group();
+	Rectangle clearback = new Rectangle(1000, 1000);
+	clearback.setTranslateY(80);
+	clearback.setFill(Color.WHITE);
+
+	 TableView table = new TableView();
+	 table.setEditable(true);
+
+	 TableColumn idcol = new TableColumn("Rent id");
+	 TableColumn vidcol = new TableColumn("Vehicle Name");
+     TableColumn bfcol = new TableColumn("BookingFrom");
+     TableColumn btcol = new TableColumn("BookingTill");
+     TableColumn amountcol = new TableColumn("Amount");
+     
+     
+     idcol.setMinWidth(100);
+     vidcol.setMinWidth(100);
+     bfcol.setMinWidth(100);
+     btcol.setMinWidth(100);
+     amountcol.setMinWidth(100);
+        
+     
+   
+ 	
+	
+
+	loaddata();	
+	
+		idcol.setCellValueFactory(new PropertyValueFactory<MyHistory,String>("id"));
+	     vidcol.setCellValueFactory(new PropertyValueFactory<MyHistory,String>("name"));
+	     bfcol.setCellValueFactory(new PropertyValueFactory<MyHistory,String>("bookingfrom"));
+	     btcol.setCellValueFactory(new PropertyValueFactory<MyHistory,String>("bookingtill"));
+	     amountcol.setCellValueFactory(new PropertyValueFactory<MyHistory,String>("Amount"));
+	     
+	     table.setItems(data);
+
+	     
+	     
+	     
+		     
+	table.setTranslateX(300);
+	table.setTranslateY(80);
+	
+	  table.getColumns().addAll(idcol, vidcol,bfcol,btcol,amountcol);
+		root.getChildren().add(clearback);
+		
+	root.getChildren().add(table);
+	
+	super.getChildren().add(root);
+
+	}
+private void loaddata() {
+	
+	 Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      stmt = conn.createStatement();
+	      String sql = "SELECT r_id, vehicle.name, bookingfrom, bookingtill, amount FROM rent,vehicle Where u_id="+this.id+" AND vehicle.v_id=rent.v_id";
+	      ResultSet rs = stmt.executeQuery(sql);
+	      while(rs.next()){
+	    	  MyHistory m = new MyHistory(rs.getString("r_id"),rs.getString("name"),rs.getString("bookingfrom"),rs.getString("bookingtill"),rs.getString("amount"));
+	    	  data.add(m);
+	    	 }
+	      rs.close();
+	   }catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	
+}
+
+} 5. Source  file: Login
+package main;
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+public class Login extends Application{
+	public static String loginID="";
+public static void main(String[] args) {
+	launch(args);
+}
+String test="testuser";
+static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+static final String DB_URL = "jdbc:mysql://localhost/carrent";
+Stage stage=new Stage();
+//  Database credentials
+static final String USER = "root";
+static final String PASS = "";
+Scene adminpanel = new Scene(new AdminPanel(),1000,600);
+Scene Clientpanel = new Scene(new ClientPanel(),1000,600);
+
+@Override
+public void start(Stage stage) throws Exception {
+	this.stage=stage;
+	// TODO Auto-generated method stub
+	Group root = new Group();
+	VBox v= new VBox();
+	
+	Label title= new Label(" WELCOME \n     \tTO \nCAR RENTAL");
+	title.setFont(Font.font("calibiri", FontWeight.BOLD, FontPosture.REGULAR, 40));
+	title.setTextFill(Color.BLACK);
+	
+	TextField username =new TextField();
+	username.setPromptText("Enter your User name");
+	username.setFocusTraversable(false);
+	username.setPrefSize(180, 30);
+	
+	PasswordField pass=new PasswordField();
+	pass.setPromptText("Enter your Passowrd");
+	pass.setFocusTraversable(false);
+	pass.setPrefSize(180, 30);
+	
+	Button btn_signin=new Button("Sign In");
+	btn_signin.setPrefSize(250, 30);
+	btn_signin.setTextFill(Color.WHITE);
+	btn_signin.setStyle("-fx-background-color : green");
+	
+	username.setText(test);
+	pass.setText(test);
+	btn_signin.setOnAction(e->{
+		 Connection conn = null;
+		   Statement stmt = null;
+		   try{
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		      System.out.println("Connected database successfully...");
+		      
+		      //STEP 4: Execute a query
+		      stmt = conn.createStatement();
+
+		      String sql = "SELECT u_id, username, password FROM user";
+		      ResultSet rs = stmt.executeQuery(sql);
+		      //STEP 5: Extract data from result set
+		      while(rs.next()){
+		         //Retrieve by column name
+		    	  String usernam = rs.getString("username");
+		         String password = rs.getString("password");
+		          System.out.println(Login.loginID);
+		         if(usernam.equals(username.getText())&&password.equals(pass.getText())) {
+		        	if(usernam.equals("admin")) {
+		        			stage.setScene(adminpanel);
+		        	//Clientpanel
+		        		//stage.setScene(Clientpanel);
+		        		loginID = rs.getString("u_id");
+						
+		        		break;
+			        	    
+		        	}
+		        	else {
+		        		stage.setScene(Clientpanel);
+		        		loginID = rs.getString("u_id");
+						
+		        		break;
+		        		
+		        	}
+		        	
+		         }
+		         else {
+		        	 System.out.println("Invalid username or password");
+		         
+		         }
+		         //Display values
+		         System.out.print(", username: " + usernam);
+		         System.out.println(", password: " + password);
+		      }
+		      
+		      rs.close();
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		   }
+		
+		
+	});
+	
+	v.getChildren().add(title);
+	v.getChildren().add(username);
+	v.getChildren().add(pass);
+	v.getChildren().add(btn_signin);
+	v.setTranslateX(80);
+	v.setTranslateY(130);
+	v.setSpacing(10);
+	root.getChildren().add(v);
+	
+	Scene sc = new Scene(root,400,600);
+	//Scene sc = new Scene(new AdminPanel(),1000,600);
+	
+	stage.setScene(sc);
+	stage.setResizable(false);
+	stage.show();
+	
+}
+} 
+ 
+6. Source  file:  MRent
+package main;
+
+
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class MRent extends Group{
+	ObservableList<MyRent> data = FXCollections.observableArrayList();
+//String id, String uid, String vid, String bookingfrom, String bookingtill
+	public MRent() {
+	Group root = new Group();
+	Rectangle clearback = new Rectangle(1000, 1000);
+	clearback.setTranslateY(80);
+	clearback.setFill(Color.WHITE);
+
+	VBox v= new VBox();
+	 TableView table = new TableView();
+	 table.setEditable(true);
+
+	 TableColumn idcol = new TableColumn("id");
+	 TableColumn uidcol = new TableColumn("User id");
+     TableColumn vidcol = new TableColumn("Vehicle id");
+     TableColumn bfcol = new TableColumn("BookingFrom");
+     TableColumn btcol = new TableColumn("BookingTill");
+     TableColumn amountcol = new TableColumn("Amount");
+     
+     
+     idcol.setMinWidth(100);
+     uidcol.setMinWidth(100);
+     vidcol.setMinWidth(100);
+     bfcol.setMinWidth(100);
+     btcol.setMinWidth(100);
+     amountcol.setMinWidth(100);
+        
+     
+   
+ 	TextField id =new TextField();
+ 	id.setPromptText("Id");
+ 	id.setFocusTraversable(false);
+ 	id.setPrefSize(180, 30);
+
+ 	TextField uid =new TextField();
+ 	uid.setPromptText("User Id");
+ 	uid.setFocusTraversable(false);
+ 	uid.setPrefSize(180, 30);
+
+ 	TextField vid =new TextField();
+ 	vid.setPromptText("Vehicle Id");
+ 	vid.setFocusTraversable(false);
+ 	vid.setPrefSize(180, 30);
+
+ 	TextField bf =new TextField();
+ 	bf.setPromptText("Booking from");
+ 	bf.setFocusTraversable(false);
+ 	bf.setPrefSize(180, 30);
+
+ 	
+     TextField bt =new TextField();
+     bt.setPromptText("Booking till");
+     bt.setFocusTraversable(false);
+     bt.setPrefSize(180, 30);
+	
+
+	TextField am =new TextField();
+	am.setPromptText("Amount");
+	am.setFocusTraversable(false);
+	am.setPrefSize(180, 30);
+
+	
+
+	loaddata();	
+	
+	Button btn_add=new Button("Add");
+	btn_add.setPrefSize(250, 30);
+	btn_add.setTextFill(Color.WHITE);
+	btn_add.setStyle("-fx-background-color : green");
+
+	Button btn_delete=new Button("Delete");
+	btn_delete.setPrefSize(250, 30);
+	btn_delete.setTextFill(Color.WHITE);
+	btn_delete.setStyle("-fx-background-color : green");
+
+	Button btn_modify=new Button("Modify");
+	btn_modify.setPrefSize(250, 30);
+	btn_modify.setTextFill(Color.WHITE);
+	btn_modify.setStyle("-fx-background-color : green");
+
+		idcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("id"));
+	  	uidcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("uid"));
+	     vidcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("vid"));
+	     bfcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("bookingfrom"));
+	     btcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("bookingtill"));
+	     amountcol.setCellValueFactory(new PropertyValueFactory<MyRent,String>("Amount"));
+	     
+	     table.setItems(data);
+
+	     
+	     
+	     
+	     btn_add.setOnAction(e->{
+	    	 
+
+	    	 addbtn(uid.getText(), vid.getText(), bf.getText(), bt.getText(), am.getText());
+	      	 id.setText("");
+	      	 uid.setText("");
+	    	 vid.setText("");
+	    	 bf.setText("");
+	    	 bt.setText("");
+	    	 am.setText("");
+	    	 
+		
+	});
+	    
+	     btn_modify.setOnAction(e->{
+	    	 
+	    	 if(!id.getText().equals("")) {
+	    	 modifybtn(id.getText(),uid.getText(), vid.getText(), bf.getText(), bt.getText(), am.getText());
+	    	 id.setText("");
+	      	 uid.setText("");
+	    	 vid.setText("");
+	    	 bf.setText("");
+	    	 bt.setText("");
+	    	 am.setText("");
+	    	 }
+		
+	});
+	     btn_delete.setOnAction(e->{
+	    	 if(!id.getText().equals("")) {
+		    	 
+	    	 deletebtn(id.getText());
+	    	 id.setText("");
+	      	 uid.setText("");
+	    	 vid.setText("");
+	    	 bf.setText("");
+	    	 bt.setText("");
+	    	 am.setText("");
+	    	 }
+	});
+	     
+	     System.out.println(table.getSelectionModel().getSelectedItem());
+	     table.setOnMouseClicked(ex -> {
+	    	    if (ex.getClickCount() > 1) {
+	    		     System.out.println(table.getSelectionModel().getSelectedItem());
+	    	    	MyRent data=(MyRent) table.getSelectionModel().getSelectedItem();
+	    	    id.setText(data.getId());
+	    	    uid.setText(data.getUid());
+	    	    vid.setText(data.getVid());
+	    	    bf.setText(data.getBookingfrom());
+	    	    bt.setText(data.getBookingtill());
+	    	    am.setText(data.getAmount());
+	    	    
+	    	    }
+	     });
+	 	v.getChildren().add(id);	     
+	v.getChildren().add(uid);
+	v.getChildren().add(vid);
+	v.getChildren().add(bf);
+	v.getChildren().add(bt);
+	v.getChildren().add(am);
+	
+	
+	v.getChildren().add(btn_add);
+	v.getChildren().add(btn_delete);
+	v.getChildren().add(btn_modify);
+	v.setTranslateX(280);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	table.setTranslateX(300);
+	table.setTranslateY(80);
+	v.setTranslateX(38);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	
+	  table.getColumns().addAll(idcol,uidcol, vidcol,bfcol,btcol,amountcol);
+		root.getChildren().add(clearback);
+		
+	root.getChildren().add(table);
+	root.getChildren().add(v);
+	
+	super.getChildren().add(root);
+
+	}
+private void loaddata() {
+	 Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      stmt = conn.createStatement();
+	      String sql = "SELECT * FROM rent";
+	      ResultSet rs = stmt.executeQuery(sql);
+	      while(rs.next()){
+	    	  MyRent m = new MyRent(rs.getString("r_id"),rs.getString("u_id"),rs.getString("v_id"),rs.getString("bookingfrom"),rs.getString("bookingtill"),rs.getString("amount"));
+	    	  data.add(m);
+	    	 }
+	      rs.close();
+	   }catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	
+}
+private void addbtn(String u,String v,String bf,String bt,String am) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("Insert into rent(u_id,v_id,bookingfrom,bookingtill,amount) VALUES(?,?,?,?,?)");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, u);
+	      pstmt.setString(2, v);
+	      pstmt.setString(3, bf);
+	      pstmt.setString(4, bt);
+	      pstmt.setString(5, am);
+          
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void modifybtn(String i,String u,String v,String bf,String bt,String am) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("UPDATE rent SET u_id=?, v_id=?, bookingfrom=?, bookingtill=?, amount=?  WHERE r_id=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, u);
+	      pstmt.setString(2, v);
+	      pstmt.setString(3, bf);
+	      pstmt.setString(4, bt);
+	      pstmt.setString(5, am);
+	         
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void deletebtn(String i) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("DELETE FROM rent WHERE r_id=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, i);
+        
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+}
+7. Source  file:  Muser
+package main;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class MUser extends Group{
+	ObservableList<MyUser> data = FXCollections.observableArrayList();
+
+	public MUser() {
+	Group root = new Group();
+	Rectangle clearback = new Rectangle(1000, 1000);
+	clearback.setTranslateY(80);
+	clearback.setFill(Color.WHITE);
+	VBox v= new VBox();
+	 TableView<MyUser> table = new TableView<MyUser>();
+	 table.setEditable(true);
+	 
+	 TableColumn unamecol = new TableColumn("username");
+     TableColumn namecol = new TableColumn("name");
+     TableColumn emailcol = new TableColumn("email");
+     TableColumn concol = new TableColumn("contact");
+     
+     unamecol.setMinWidth(100);
+     namecol.setMinWidth(100);
+     emailcol.setMinWidth(100);
+     concol.setMinWidth(100);
+        
+     
+   
+	TextField username =new TextField();
+	username.setPromptText("User name");
+	username.setFocusTraversable(false);
+	username.setPrefSize(180, 30);
+	
+	TextField name =new TextField();
+	name.setPromptText("Name");
+	name.setFocusTraversable(false);
+	name.setPrefSize(180, 30);
+
+	TextField contact =new TextField();
+	contact.setPromptText("contact");
+	contact.setFocusTraversable(false);
+	contact.setPrefSize(180, 30);
+
+	TextField email =new TextField();
+	email.setPromptText("email");
+	email.setFocusTraversable(false);
+	email.setPrefSize(180, 30);
+
+	loaddata();	
+	
+	Button btn_add=new Button("Add");
+	btn_add.setPrefSize(250, 30);
+	btn_add.setTextFill(Color.WHITE);
+	btn_add.setStyle("-fx-background-color : green");
+
+	Button btn_delete=new Button("Delete");
+	btn_delete.setPrefSize(250, 30);
+	btn_delete.setTextFill(Color.WHITE);
+	btn_delete.setStyle("-fx-background-color : green");
+
+	Button btn_modify=new Button("Modify");
+	btn_modify.setPrefSize(250, 30);
+	btn_modify.setTextFill(Color.WHITE);
+	btn_modify.setStyle("-fx-background-color : green");
+
+	  unamecol.setCellValueFactory(new PropertyValueFactory<MyUser,String>("username"));
+	     namecol.setCellValueFactory(new PropertyValueFactory<MyUser,String>("name"));
+	     emailcol.setCellValueFactory(new PropertyValueFactory<MyUser,String>("email"));
+	     concol.setCellValueFactory(new PropertyValueFactory<MyUser,String>("contact"));
+	     table.setItems(data);
+
+	     
+	     
+	     
+	     btn_add.setOnAction(e->{
+	    	 
+
+	    	 addbtn(username.getText(), name.getText(), email.getText(), contact.getText());
+	    	 username.setText("");
+	    	 name.setText("");
+	    	 email.setText("");
+	    	 contact.setText("");
+		
+	});
+	    
+	     btn_modify.setOnAction(e->{
+	    	 
+	    	 if(!username.getText().equals("")) {
+	    	 modifybtn(username.getText(), name.getText(), email.getText(), contact.getText());
+	    	 username.setText("");
+	    	 name.setText("");
+	    	 email.setText("");
+	    	 contact.setText("");
+	    	 }
+		
+	});
+	     btn_delete.setOnAction(e->{
+	    	 if(!username.getText().equals("")) {
+		    	 
+	    	 deletebtn(username.getText());
+	    	 username.setText("");
+	    	 name.setText("");
+	    	 email.setText("");
+	    	 contact.setText("");
+	    	 }
+	});
+	     
+	     System.out.println(table.getSelectionModel().getSelectedItem());
+	     table.setOnMouseClicked(ex -> {
+	    	    if (ex.getClickCount() > 1) {
+	    		     System.out.println(table.getSelectionModel().getSelectedItem());
+	    	    	MyUser data=(MyUser) table.getSelectionModel().getSelectedItem();
+	    	    username.setText(data.getUsername());
+	    	    name.setText(data.getName());
+	    	    email.setText(data.getEmail());
+	    	    contact.setText(data.getContact());
+	    	    
+	    	    }
+	     });
+	 v.getChildren().add(username);
+	v.getChildren().add(name);
+	v.getChildren().add(contact);
+	v.getChildren().add(email);
+	
+	
+	v.getChildren().add(btn_add);
+	v.getChildren().add(btn_delete);
+	v.getChildren().add(btn_modify);
+	v.setTranslateX(280);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	table.setTranslateX(400);
+	table.setTranslateY(80);
+	v.setTranslateX(38);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	
+	  table.getColumns().addAll(unamecol, namecol, emailcol,concol);
+	root.getChildren().add(clearback);
+	root.getChildren().add(v);
+	
+	root.getChildren().add(table);
+	
+	super.getChildren().add(root);	
+
+	}
+private void loaddata() {
+	 Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      stmt = conn.createStatement();
+	      String sql = "SELECT * FROM user";
+	      ResultSet rs = stmt.executeQuery(sql);
+	      while(rs.next()){
+	    	  MyUser m = new MyUser(rs.getString("username"),rs.getString("name"),rs.getString("email"),rs.getString("contact"));
+	    	  data.add(m);
+	    	 }
+	      rs.close();
+	   }catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	
+}
+private void addbtn(String u,String n,String e,String c) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("Insert into user(username,name,email,contact) VALUES(?,?,?,?)");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, u);
+	      pstmt.setString(2, n);
+	      pstmt.setString(3, e);
+	      pstmt.setString(4, c);
+          
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void modifybtn(String u,String n,String e,String c) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("UPDATE user SET name=?, email=?, contact=? WHERE username=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, n);
+	      pstmt.setString(2, e);
+	      pstmt.setString(3, c);
+	      pstmt.setString(4, u);
+         
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void deletebtn(String u) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("DELETE FROM user WHERE username=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, u);
+        
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+}
+8. Source  file:  MVehicles
+package main;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+public class MVehicles extends Group{
+	ObservableList<MyVehicle> data = FXCollections.observableArrayList();
+
+	public MVehicles() {
+	Group root = new Group();
+	Rectangle clearback = new Rectangle(1000, 1000);
+	clearback.setTranslateY(80);
+	clearback.setFill(Color.WHITE);
+
+	VBox v= new VBox();
+	 TableView table = new TableView();
+	 table.setEditable(true);
+
+	 TableColumn idcol = new TableColumn("id");
+	 TableColumn namecol = new TableColumn("name");
+     TableColumn catcol = new TableColumn("category");
+     TableColumn rescol = new TableColumn("reserved");
+     
+     idcol.setMinWidth(100);
+
+     namecol.setMinWidth(100);
+     catcol.setMinWidth(100);
+     rescol.setMinWidth(100);
+        
+     
+   
+ 	TextField id =new TextField();
+ 	id.setPromptText("Id");
+ 	id.setFocusTraversable(false);
+ 	id.setPrefSize(180, 30);
+
+     TextField name =new TextField();
+	name.setPromptText("Name");
+	name.setFocusTraversable(false);
+	name.setPrefSize(180, 30);
+	
+	TextField cat =new TextField();
+	cat.setPromptText("Category");
+	cat.setFocusTraversable(false);
+	cat.setPrefSize(180, 30);
+
+	TextField res =new TextField();
+	res.setPromptText("Reserved(Yes/No)");
+	res.setFocusTraversable(false);
+	res.setPrefSize(180, 30);
+
+	
+
+	loaddata();	
+	
+	Button btn_add=new Button("Add");
+	btn_add.setPrefSize(250, 30);
+	btn_add.setTextFill(Color.WHITE);
+	btn_add.setStyle("-fx-background-color : green");
+
+	Button btn_delete=new Button("Delete");
+	btn_delete.setPrefSize(250, 30);
+	btn_delete.setTextFill(Color.WHITE);
+	btn_delete.setStyle("-fx-background-color : green");
+
+	Button btn_modify=new Button("Modify");
+	btn_modify.setPrefSize(250, 30);
+	btn_modify.setTextFill(Color.WHITE);
+	btn_modify.setStyle("-fx-background-color : green");
+
+		idcol.setCellValueFactory(new PropertyValueFactory<MyVehicle,String>("id"));
+	  	namecol.setCellValueFactory(new PropertyValueFactory<MyVehicle,String>("name"));
+	     catcol.setCellValueFactory(new PropertyValueFactory<MyVehicle,String>("category"));
+	     rescol.setCellValueFactory(new PropertyValueFactory<MyVehicle,String>("reserved"));
+	     table.setItems(data);
+
+	     
+	     
+	     
+	     btn_add.setOnAction(e->{
+	    	 
+
+	    	 addbtn(name.getText(), cat.getText(), res.getText());
+	      	 id.setText("");
+	      	 name.setText("");
+	    	 cat.setText("");
+	    	 res.setText("");
+		
+	});
+	    
+	     btn_modify.setOnAction(e->{
+	    	 
+	    	 if(!id.getText().equals("")) {
+	    	 modifybtn(id.getText(),name.getText(), cat.getText(), res.getText());
+	    	 id.setText("");
+	    	 name.setText("");
+	    	 cat.setText("");
+	    	 res.setText("");
+	    	 }
+		
+	});
+	     btn_delete.setOnAction(e->{
+	    	 if(!id.getText().equals("")) {
+		    	 
+	    	 deletebtn(id.getText());
+	    	 id.setText("");
+	    	 
+	    	 name.setText("");
+	    	 cat.setText("");
+	    	 res.setText("");
+	    	 }
+	});
+	     
+	     System.out.println(table.getSelectionModel().getSelectedItem());
+	     table.setOnMouseClicked(ex -> {
+	    	    if (ex.getClickCount() > 1) {
+	    		     System.out.println(table.getSelectionModel().getSelectedItem());
+	    	    	MyVehicle data=(MyVehicle) table.getSelectionModel().getSelectedItem();
+	    	    id.setText(data.getId());
+	    	    name.setText(data.getName());
+	    	    cat.setText(data.getCategory());
+	    	    res.setText(data.getReserved());
+	    	    
+	    	    }
+	     });
+	 	v.getChildren().add(id);	     
+	v.getChildren().add(name);
+	v.getChildren().add(cat);
+	v.getChildren().add(res);
+	
+	
+	v.getChildren().add(btn_add);
+	v.getChildren().add(btn_delete);
+	v.getChildren().add(btn_modify);
+	v.setTranslateX(280);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	table.setTranslateX(400);
+	table.setTranslateY(80);
+	v.setTranslateX(38);
+	v.setTranslateY(80);
+	v.setSpacing(10);
+	
+	  table.getColumns().addAll(idcol,namecol, catcol,rescol);
+		root.getChildren().add(clearback);
+
+	root.getChildren().add(table);
+	root.getChildren().add(v);
+	
+	super.getChildren().add(root);	
+
+	}
+private void loaddata() {
+	 Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      stmt = conn.createStatement();
+	      String sql = "SELECT * FROM vehicle";
+	      ResultSet rs = stmt.executeQuery(sql);
+	      while(rs.next()){
+	    	  MyVehicle m = new MyVehicle(rs.getString("v_id"),rs.getString("name"),rs.getString("category"),rs.getString("reserved"));
+	    	  data.add(m);
+	    	 }
+	      rs.close();
+	   }catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	
+}
+private void addbtn(String n,String c,String r) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("Insert into vehicle(name,category,reserved) VALUES(?,?,?)");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, n);
+	      pstmt.setString(2, c);
+	      pstmt.setString(3, r);
+          
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void modifybtn(String i,String n,String c,String r) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("UPDATE vehicle SET name=?, category=?, reserved=? WHERE v_id=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, n);
+	      pstmt.setString(2, c);
+	      pstmt.setString(3, r);
+	      pstmt.setString(4, i);
+         
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+private void deletebtn(String i) {
+	
+	 Connection conn = null;
+	 PreparedStatement pstmt = null;
+	   try{
+	      conn = DriverManager.getConnection(Login.DB_URL, Login.USER, Login.PASS);
+	      pstmt = conn.prepareStatement("DELETE FROM vehicle WHERE v_id=?");
+	      //update users set num_points = ? where first_name = ?
+	      pstmt.setString(1, i);
+        
+	      pstmt.executeUpdate();
+	   }
+	   catch(SQLException se){
+	      se.printStackTrace();
+	   }
+	data.clear();
+	 loaddata();	
+}
+
+}
+9. Source  file:  My Booking
+package main;
+
+public class MyBooking {
+
+	private String vid;
+	private String vn;
+	private String vc;
+	private String bf;
+	private String bt;
+	public MyBooking(String vid, String vn, String vc, String bf, String bt) {
+		
+		this.vid = vid;
+		this.vn = vn;
+		this.vc = vc;
+		this.bf = bf;
+		this.bt = bt;
+	}
+	@Override
+	public String toString() {
+		return "MyBooking [vid=" + vid + ", vn=" + vn + ", vc=" + vc + ", bf=" + bf + ", bt=" + bt + "]";
+	}
+	public String getVid() {
+		return vid;
+	}
+	public void setVid(String vid) {
+		this.vid = vid;
+	}
+	public String getVn() {
+		return vn;
+	}
+	public void setVn(String vn) {
+		this.vn = vn;
+	}
+	public String getVc() {
+		return vc;
+	}
+	public void setVc(String vc) {
+		this.vc = vc;
+	}
+	public String getBf() {
+		return bf;
+	}
+	public void setBf(String bf) {
+		this.bf = bf;
+	}
+	public String getBt() {
+		return bt;
+	}
+	public void setBt(String bt) {
+		this.bt = bt;
+	}
+	
+	
+}
+10. Source  file:  My History
+package main;
+
+public class MyHistory {
+	String id;
+	String name;
+	String bookingfrom;
+	String Bookingtill;
+	String amount;
+	public MyHistory(String id, String name, String bookingfrom, String bookingtill, String date) {
+		this.id = id;
+		this.name = name;
+		this.bookingfrom = bookingfrom;
+		Bookingtill = bookingtill;
+		this.amount = date;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getBookingfrom() {
+		return bookingfrom;
+	}
+	public void setBookingfrom(String bookingfrom) {
+		this.bookingfrom = bookingfrom;
+	}
+	public String getBookingtill() {
+		return Bookingtill;
+	}
+	public void setBookingtill(String bookingtill) {
+		Bookingtill = bookingtill;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String date) {
+		this.amount = date;
+	}
+	
+
+}
+11. Source  file:  My Rent
+package main;
+
+public class MyRent {
+	
+	
+	private String id;
+	private String uid;
+	private String vid;
+	private String bookingfrom;
+	private String bookingtill;
+	private String amount;
+	public MyRent(String id, String uid, String vid, String bookingfrom, String bookingtill,String amount) {
+		this.id = id;
+		this.uid = uid;
+		this.vid = vid;
+		this.bookingfrom = bookingfrom;
+		this.bookingtill = bookingtill;
+		this.amount=amount;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	public String getVid() {
+		return vid;
+	}
+	public void setVid(String vid) {
+		this.vid = vid;
+	}
+	public String getBookingfrom() {
+		return bookingfrom;
+	}
+	public void setBookingfrom(String bookingfrom) {
+		this.bookingfrom = bookingfrom;
+	}
+	public String getBookingtill() {
+		return bookingtill;
+	}
+	public void setBookingtill(String bookingtill) {
+		this.bookingtill = bookingtill;
+	}
+	
+	
+}
+12. Source  file:  My User
+package main;
+
+public class MyUser {
+private String username;
+private String name;
+private String email;
+private String contact;
+
+public String getUsername() {
+	return username;
+}
+
+public void setUsername(String username) {
+	this.username = username;
+}
+
+public String getName() {
+	return name;
+}
+
+public void setName(String name) {
+	this.name = name;
+}
+
+public String getEmail() {
+	return email;
+}
+
+public void setEmail(String email) {
+	this.email = email;
+}
+
+public String getContact() {
+	return contact;
+}
+
+public void setContact(String contact) {
+	this.contact = contact;
+}
+
+public MyUser(String username, String name, String email, String contact) {
+this.username = username;
+	this.name = name;
+	this.email = email;
+	this.contact = contact;
+}
+
+@Override
+public String toString() {
+	return "MyUser [username=" + username + ", name=" + name + ", email=" + email + ", contact=" + contact + "]";
+}
+
+public MyUser() {
+}
+
+
+}
+13. Source  file:  My vehicle
+package main;
+
+public class MyVehicle {
+	private String id;
+	private String name;
+	private String category;
+	private String reserved;
+	public MyVehicle(String id,String name, String category, String reserved) {
+		this.id=id;
+		this.name = name;
+		this.category = category;
+		this.reserved = reserved;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public String getReserved() {
+		return reserved;
+	}
+	public void setReserved(String reserved) {
+		this.reserved = reserved;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
